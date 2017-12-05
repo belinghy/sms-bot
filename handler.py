@@ -82,14 +82,9 @@ def send_sms(to, body):
         To=to,
         Body=body), auth=(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN))
     return {
-        'statusCode': '200',
-        'body': {
-            'to': to,
-            'message': body
-        },
-        'headers': {
-            'Content-Type': 'application/json',
-        }
+        'statusCode': 200,
+        'headers': { 'Content-Type': 'application/json' },
+        'body': json.dumps({ 'to': to, 'message': body })
     }
 
 def lambda_handler(event, context):
@@ -101,6 +96,9 @@ def lambda_handler(event, context):
     try:
         service, params = parse(message)
         response = service.handler(params)
-        return send_sms(from_number, response)
+        ret = send_sms(from_number, response)
+        return ret
     except Exception as e:
-        return send_sms(from_number, str(e))
+        ret = send_sms(from_number, str(e))
+        return ret
+
